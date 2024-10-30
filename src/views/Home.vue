@@ -1,58 +1,29 @@
 <template>
-  <div>
-    <h1>Pobierz dane gracza League of Legends</h1>
-    <input v-model="gameName" placeholder="Wprowadź nazwę z gry" />
-    <input v-model="tagLine" placeholder="Wprowadź tag" />
-    <p v-if="error">{{ error }}</p>
-    <div v-if="puuidStore.puuid">
-      <p>PUUID gracza: {{ puuidStore.puuid }}</p>
+  <div class="p-8">
+    <h1 class="text-2xl font-bold text-center mb-6">Sprawdź statystyki z gier</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <GameCard
+        v-for="game in games"
+        :key="game.id"
+        :title="game.title"
+        :image="game.image"
+        :link="game.link"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import axios from 'axios';
-import { usePuuidStore } from '@/stores/puuidStore';
+import { onMounted, ref } from 'vue';
+import GameCard from './GameCard.vue';
 
-const gameName = ref('');
-const tagLine = ref('');
-const error = ref(null);
-const puuidStore = usePuuidStore();
-
-const getSummonerPuuid = async () => {
-  if (!gameName.value || !tagLine.value) {
-    error.value = 'Proszę wprowadzić zarówno nazwę z gry, jak i tag';
-    return;
-  }
-
-  const apiUrl = `/api/riot/account/v1/accounts/by-riot-id/${gameName.value}/${tagLine.value}`;
-
-  try {
-    const response = await axios.get(apiUrl, {
-      headers: {
-        'X-Riot-Token': 'RGAPI-833fab29-9991-4e25-bf64-604e2ae7d5f7',
-      },
-    });
-    puuidStore.setPuuid(response.data.puuid);
-    error.value = null;
-  } catch (err) {
-    error.value = 'Błąd podczas pobierania PUUID';
-    console.error("Wystąpił błąd:", err);
-  }
-};
-
-watch([gameName, tagLine], () => {
-  if (gameName.value && tagLine.value) {
-    getSummonerPuuid();
-  }
-});
+const games = ref([]);
 
 onMounted(() => {
-  puuidStore.loadPuuid();
-});
-
-onBeforeUnmount(() => {
-  puuidStore.clearPuuid();
+  games.value = [
+    { id: 1, title: 'League Of Legends', link: '/league-of-legends', image: 'https://img.redbull.com/images/c_limit,w_1500,h_1000/f_auto,q_auto/redbullcom/2022/8/1/ksfga6rlx2ugfhjd9vnk/league-of-legends' },
+    { id: 2, title: 'Counter-Strike 2', link: '/cs2', image: 'https://cs2mod.pl/uploads/monthly_2024_08/rssImage-513d980940b3ca7f2121b516a7b8d44d.png.c55a8b200c17f3125a4c1bfa2f6cb5f2.png' },
+    { id: 3, title: 'Valorant', link: '/valorant', image: 'https://static.android.com.pl/uploads/2020/06/valorant.jpg' },
+  ];
 });
 </script>
