@@ -22,7 +22,7 @@
         @click="getSummonerPuuid"
         class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
       >
-        Pobierz PUUID
+        Zobacz statystyki
       </button>
       <p v-if="error" class="mt-4 text-red-500 text-center">{{ error }}</p>
       <div v-if="puuidStore.puuid" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
